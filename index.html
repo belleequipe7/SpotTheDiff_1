@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>間違い探しゲーム</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="start-screen" class="start-screen">
+        <div class="start-content">
+            <div class="doki-doki">ドキドキ</div>
+            <h1>間違い探し<br>ゲーム</h1>
+            <div class="button-group">
+                <button id="start-btn" class="pop-btn start">開始</button>
+                <button id="exit-btn" class="pop-btn exit">終了</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container hidden">
+        <div class="game-header">
+            <div class="doki-doki-game">ドキドキ</div>
+            <h1>間違い探しゲーム</h1>
+        </div>
+        <p>左右の画像から間違いを5つ探し、間違い箇所をクリックしてください！</p>
+        <div id="heart-container" class="heart-container"></div>
+
+        <div class="canvas-wrapper">
+            <div class="canvas-box">
+                <h2>正解</h2>
+                <canvas id="canvasLeft"></canvas>
+            </div>
+            <div class="canvas-box">
+                <h2 id="mistake-header">間違い</h2>
+                <canvas id="canvasRight"></canvas>
+            </div>
+        </div>
+
+        <div id="ui-overlay" class="overlay hidden">
+            <div class="message-box">
+                <h2 id="overlay-title">ゲームクリア！</h2>
+                <p id="overlay-message">おめでとうございます！(ブラウザの更新をお願いします)
+                </p>
+                <div class="button-group">
+                    <button id="restart-btn">もう一度遊ぶ</button>
+                    <button id="game-over-exit-btn" class="pop-btn exit" style="margin-top: 20px;">終了</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-board">
+            見つけた間違い: <span id="found-count">0</span> / 5
+        </div>
+    </div>
+    <script src="imageData.js"></script>
+    <script src="script.js"></script>
+    <div id="blood-overlay" class="blood-screen hidden"></div>
+</body>
+
+</html>
