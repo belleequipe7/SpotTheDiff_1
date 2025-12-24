@@ -19,6 +19,7 @@ let mistakeCount = 0;
 let foundDifferences = 0;
 let totalDifferences; // Will be set after generation
 let chestClickCount = 0; // Prank counter
+let playCount = 0; // Play counter
 
 
 // Heart System
@@ -240,6 +241,14 @@ img.onload = () => {
         mistakeHeader.addEventListener('click', showHint);
     }
 
+    // Setup Version/Credit Listener
+    // Target: <h2 id="correct-header">正解</h2>
+    const correctHeader = document.getElementById('correct-header');
+    if (correctHeader) {
+        correctHeader.style.cursor = 'pointer';
+        correctHeader.addEventListener('click', showVersionInfo);
+    }
+
     // Init Hearts
     initHearts();
 };
@@ -284,7 +293,11 @@ function showHint() {
     showTemporaryMessage(`ヒント: エリア ${gridNum}`);
 }
 
-function showTemporaryMessage(text) {
+function showVersionInfo() {
+    showTemporaryMessage(`バージョン : 1.0.1\n制作 : Belleequipe (M.Furuya)\nプレイ回数 : ${playCount}`, 2000, true);
+}
+
+function showTemporaryMessage(text, duration = 2000, isPopup = false) {
     const container = document.querySelector('.game-container');
 
     // Check if hint already exists
@@ -296,7 +309,10 @@ function showTemporaryMessage(text) {
         hintEl.style.fontSize = '24px';
         hintEl.style.fontWeight = 'bold';
         hintEl.style.marginBottom = '10px';
+        hintEl.style.fontWeight = 'bold';
+        hintEl.style.marginBottom = '10px';
         hintEl.style.textAlign = 'center';
+        hintEl.style.whiteSpace = 'pre-line'; // Support \n
         if (container) {
             const header = document.querySelector('.game-header');
             if (header) {
@@ -309,6 +325,13 @@ function showTemporaryMessage(text) {
         }
     }
 
+    // Toggle Popup Class
+    if (isPopup) {
+        hintEl.classList.add('popup-message');
+    } else {
+        hintEl.classList.remove('popup-message');
+    }
+
     hintEl.innerText = text;
 
     // Clear any existing timeout if we spam click (simple debounce visual)
@@ -316,7 +339,8 @@ function showTemporaryMessage(text) {
 
     hintEl.timeoutId = setTimeout(() => {
         hintEl.innerText = "";
-    }, 2000);
+        hintEl.classList.remove('popup-message');
+    }, duration);
 }
 
 function applyDifferences() {
@@ -675,7 +699,7 @@ function playGameOverMelody() {
 function triggerGameOver() {
     playGameOverMelody();
     overlayTitle.textContent = "ゲームオーバー";
-    overlayMessage.textContent = "5回間違えました... 残念！（ボタンが効かないので、ブラウザの更新をお願いします）";
+    overlayMessage.textContent = "5回間違えました... 残念！";
     uiOverlay.classList.remove('hidden');
 }
 
@@ -712,23 +736,24 @@ function playThankYou() {
     u.rate = 1.0;
     u.pitch = 1.2;
     window.speechSynthesis.speak(u);
-    foundDifferences = 0;
-    mistakeCount = 0;
-    foundCountSpan.textContent = "0";
-    //uiOverlay.classList.add('hidden');
+}
 
-    // Reset Visuals
-    ctxLeft.drawImage(img, 0, 0);
-    ctxRight.drawImage(img, 0, 0);
+function updatePlayCount() {
+    const savedCount = localStorage.getItem('playCount');
+    playCount = savedCount ? parseInt(savedCount, 10) : 0;
 
-    // Reset Hearts
-    initHearts();
+    // Cap at 1,000,000 as requested
+    if (playCount < 1000000) {
+        playCount++;
+    }
 
-    // Regenerate Content
-    generateGameContent();
+    localStorage.setItem('playCount', playCount);
 }
 
 function generateGameContent() {
+    // Update play count on generation
+    updatePlayCount();
+
     // Logic extracted from img.onload
     diffConfigs = [];
     const MAX_RETRIES = 50;
@@ -760,6 +785,52 @@ function gameComplete() {
     uiOverlay.classList.remove('hidden');
     //const uiOverlay = document.getElementById('ui-overlay');
     playThankYou();
+}
+
+function resetGame() {
+    // Hide Overlay
+    uiOverlay.classList.add('hidden');
+
+    // Reset Counters
+    foundDifferences = 0;
+    mistakeCount = 0;
+    foundCountSpan.textContent = "0";
+    chestClickCount = 0; // Reset prank counter too
+
+    // Reset Visuals
+    ctxLeft.drawImage(img, 0, 0);
+    ctxRight.drawImage(img, 0, 0);
+
+    // Clear any existing Prank overlays if active
+    const bloodOverlay = document.getElementById('blood-overlay');
+    if (bloodOverlay) bloodOverlay.classList.add('hidden');
+
+    // Reset Hearts
+    initHearts();
+
+    // Regenerate Content
+    generateGameContent();
+
+    // Resume Audio if needed
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function goToTitle() {
+    // Hide Overlay & Game Container
+    uiOverlay.classList.add('hidden');
+    document.querySelector('.game-container').classList.add('hidden');
+
+    // Show Start Screen
+    document.getElementById('start-screen').classList.remove('hidden');
+
+    // Optional: Reset game state in background so it's fresh if they click Start again
+    // But allow Start button logic to handle init if possible. 
+    // For safety, we can just leave it as is, or call resetGame() silently.
+    // Let's call resetGame() to ensure clean state for next run.
+    resetGame();
+    // Note: resetGame removes 'hidden' from uiOverlay? No, it adds 'hidden'. Good.
 }
 
 // Start Loading
@@ -800,16 +871,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const gameOverExitBtn = document.getElementById('game-over-exit-btn');
     if (gameOverExitBtn) {
-        gameOverExitBtn.addEventListener('click', () => {
-            // Return to Title Logic
-            uiOverlay.classList.add('hidden');
-            const gameContainer = document.querySelector('.game-container');
-            const startScreen = document.getElementById('start-screen');
-
-            gameContainer.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-
-            resetGame(); // Reset internal state silently
-        });
+        gameOverExitBtn.addEventListener('click', goToTitle);
     }
+
+
 });
