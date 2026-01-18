@@ -59,6 +59,7 @@ canvas {
     display: block;
     cursor: crosshair;
     max-width: 100%;
+    height: auto;
 }
 
 .score-board {
@@ -488,6 +489,7 @@ button:hover {
         max-width: 100%;
         border: 3px solid #fff;
         /* Thinner border */
+        flex: 0 0 auto;
     }
 
     .canvas-box h2 {

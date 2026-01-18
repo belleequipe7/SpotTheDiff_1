@@ -213,45 +213,58 @@ function checkCollision(newDiff, existingDiffs) {
     return false;
 }
 
-img.onload = () => {
-    // Generate Random Diffs
-    generateGameContent();
+// Start Loading
+if (typeof base64Image !== 'undefined') {
+    img.onload = () => {
+        // Generate Random Diffs
+        generateGameContent();
 
-    // Set canvas size to match image
-    canvasLeft.width = img.width;
-    canvasLeft.height = img.height;
-    canvasRight.width = img.width;
-    canvasRight.height = img.height;
+        // Set canvas size to match image
+        canvasLeft.width = img.width;
+        canvasLeft.height = img.height;
+        canvasRight.width = img.width;
+        canvasRight.height = img.height;
 
-    ctxLeft.drawImage(img, 0, 0);
-    ctxRight.drawImage(img, 0, 0);
+        ctxLeft.drawImage(img, 0, 0);
+        ctxRight.drawImage(img, 0, 0);
 
-    applyDifferences();
+        applyDifferences();
 
+        // Only Setup Listener for RIGHT canvas (User Rule: Left Ignore)
+        canvasRight.addEventListener('click', handleClick);
 
-    // Only Setup Listener for RIGHT canvas (User Rule: Left Ignore)
-    canvasRight.addEventListener('click', handleClick);
+        // Setup Hint Listener
+        const mistakeHeader = document.getElementById('mistake-header');
+        if (mistakeHeader) {
+            mistakeHeader.style.cursor = 'pointer';
+            mistakeHeader.title = "ヒントを表示 (残り1つの時のみ)";
+            mistakeHeader.addEventListener('click', showHint);
+        }
 
-    // Setup Hint Listener
-    // Target: <h2 id="mistake-header">間違い</h2>
-    const mistakeHeader = document.getElementById('mistake-header');
-    if (mistakeHeader) {
-        mistakeHeader.style.cursor = 'pointer';
-        mistakeHeader.title = "ヒントを表示 (残り1つの時のみ)";
-        mistakeHeader.addEventListener('click', showHint);
-    }
+        // Setup Version/Credit Listener
+        const correctHeader = document.getElementById('correct-header');
+        if (correctHeader) {
+            correctHeader.style.cursor = 'pointer';
+            correctHeader.addEventListener('click', showVersionInfo);
+        }
 
-    // Setup Version/Credit Listener
-    // Target: <h2 id="correct-header">正解</h2>
-    const correctHeader = document.getElementById('correct-header');
-    if (correctHeader) {
-        correctHeader.style.cursor = 'pointer';
-        correctHeader.addEventListener('click', showVersionInfo);
-    }
+        // Init Hearts
+        initHearts();
 
-    // Init Hearts
-    initHearts();
-};
+        // Debug success (User requested confirmation)
+        // alert("画像の読み込みに成功しました"); // Commented out to avoid annoyance after fix, can enable if needed
+        console.log("Image loaded successfully:", img.width, "x", img.height);
+    };
+
+    img.onerror = (e) => {
+        console.error("Image failed to load:", e);
+        alert("画像の読み込みに失敗しました。再読み込みしてください。");
+    };
+
+    img.src = base64Image;
+} else {
+    alert("画像データが見つかりません (imageData.js error)");
+}
 
 function showHint() {
     // Condition: Only if 1 difference left
@@ -294,7 +307,7 @@ function showHint() {
 }
 
 function showVersionInfo() {
-    showTemporaryMessage(`バージョン : 1.0.3\n制作 : Belleequipe (M.Furuya)\nプレイ回数 : ${playCount}`, 2000, true);
+    showTemporaryMessage(`バージョン : 1.0.4\n制作 : Belleequipe (M.Furuya)\nプレイ回数 : ${playCount}`, 2000, true);
 }
 
 function showTemporaryMessage(text, duration = 2000, isPopup = false) {
@@ -849,8 +862,7 @@ function goToTitle() {
     // Note: resetGame removes 'hidden' from uiOverlay? No, it adds 'hidden'. Good.
 }
 
-// Start Loading
-img.src = base64Image;
+
 
 // --- Start Screen Logic ---
 document.addEventListener('DOMContentLoaded', () => {
