@@ -294,7 +294,7 @@ function showHint() {
 }
 
 function showVersionInfo() {
-    showTemporaryMessage(`バージョン : 1.0.2\n制作 : Belleequipe (M.Furuya)\nプレイ回数 : ${playCount}`, 2000, true);
+    showTemporaryMessage(`バージョン : 1.0.3\n制作 : Belleequipe (M.Furuya)\nプレイ回数 : ${playCount}`, 2000, true);
 }
 
 function showTemporaryMessage(text, duration = 2000, isPopup = false) {
@@ -710,7 +710,15 @@ function triggerPrank() {
     // Show Blood
     bloodOverlay.classList.remove('hidden');
 
-    // Wait 2 seconds, then speak "Kono Erogappa"
+    let isHidden = false;
+    const hideOverlay = () => {
+        if (!isHidden) {
+            bloodOverlay.classList.add('hidden');
+            isHidden = true;
+        }
+    };
+
+    // Wait 1 second before speech
     setTimeout(() => {
         const u = new SpeechSynthesisUtterance("この〜、エロガッパが！");
         u.lang = 'ja-JP';
@@ -719,12 +727,20 @@ function triggerPrank() {
 
         u.onend = () => {
             // Return to game after speaking
-            setTimeout(() => {
-                bloodOverlay.classList.add('hidden');
-            }, 500);
+            setTimeout(hideOverlay, 500);
+        };
+
+        // Error handling for speech
+        u.onerror = () => {
+            setTimeout(hideOverlay, 500);
         };
 
         window.speechSynthesis.speak(u);
+
+        // Fallback: Force hide after 4 seconds (1s wait + ~2-3s speech)
+        // This ensures the screen doesn't stay red forever on mobile
+        setTimeout(hideOverlay, 4000);
+
     }, 1000);
 }
 
