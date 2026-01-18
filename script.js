@@ -294,7 +294,7 @@ function showHint() {
 }
 
 function showVersionInfo() {
-    showTemporaryMessage(`バージョン : 1.0.1\n制作 : Belleequipe (M.Furuya)\nプレイ回数 : ${playCount}`, 2000, true);
+    showTemporaryMessage(`バージョン : 1.0.2\n制作 : Belleequipe (M.Furuya)\nプレイ回数 : ${playCount}`, 2000, true);
 }
 
 function showTemporaryMessage(text, duration = 2000, isPopup = false) {

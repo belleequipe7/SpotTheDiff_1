@@ -386,3 +386,128 @@ button:hover {
     width: max-content;
     max-width: 90%;
 }
+
+/* Mobile Optimization */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 5px;
+        /* Minimize body padding */
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .game-container {
+        padding: 10px;
+        /* Reduce container padding */
+        margin-top: 0;
+        width: 100%;
+        box-sizing: border-box;
+        /* Ensure padding doesn't affect width */
+        border-radius: 10px;
+        /* Smaller radius */
+        box-shadow: none;
+        /* Simplify visuals for performance/space */
+    }
+
+    /* Start Screen Optimizations */
+    .start-content {
+        padding: 1.5rem;
+        /* Reduce padding */
+        width: 90%;
+        max-width: 350px;
+    }
+
+    .start-content h1 {
+        font-size: 2rem;
+        /* Smaller title */
+        margin-bottom: 1.5rem;
+    }
+
+    .doki-doki {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .pop-btn {
+        width: 100%;
+        font-size: 1.1rem;
+        padding: 12px 0;
+        /* Uniform padding */
+    }
+
+    /* Game Screen Optimizations */
+    .game-header {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 5px;
+    }
+
+    .doki-doki-game {
+        font-size: 1.5rem;
+        -webkit-text-stroke: 1px #FF6B6B;
+        /* Thinner stroke */
+    }
+
+    .game-header h1 {
+        font-size: 1.2rem;
+        line-height: 1.2;
+    }
+
+    .game-container p {
+        font-size: 0.9rem;
+        /* Smaller instruction text */
+        margin: 5px 0 10px 0;
+    }
+
+    /* Heart Container */
+    .heart-container {
+        height: 30px;
+        margin-bottom: 10px;
+    }
+
+    .heart-icon {
+        font-size: 1.5rem;
+    }
+
+    /* Canvas Layout */
+    .canvas-wrapper {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .canvas-box {
+        width: 100%;
+        max-width: 100%;
+        border: 3px solid #fff;
+        /* Thinner border */
+    }
+
+    .canvas-box h2 {
+        font-size: 1rem;
+        margin: 5px 0;
+    }
+
+    /* Score Board */
+    .score-board {
+        font-size: 1.2rem;
+        margin-top: 15px;
+    }
+
+    /* Overlay adjustments */
+    .message-box {
+        padding: 20px;
+        width: 85%;
+    }
+
+    .message-box h2 {
+        font-size: 1.5rem;
+    }
+}
